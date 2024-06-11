@@ -13,11 +13,11 @@ interface SpoonApi {
     suspend fun getRecipeList(
         @Query("limit") limit: Int,
         @Query("offset") offset: Int,
-        @Query(Constants.API_KEY) apiKey: String
+        @Query("query") query: String? = null
     ): RecipeList
 
-    @GET("recipes/{name}")
+    @GET("recipes/{name}/information")
     suspend fun getRecipeDetails(
-        @Path("name") name: String
+        @Path("name") name: String,
     ): Recipe
 }

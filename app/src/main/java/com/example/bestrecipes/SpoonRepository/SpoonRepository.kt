@@ -9,23 +9,40 @@ import javax.inject.Inject
 
 @ActivityScoped
 class SpoonRepository @Inject constructor(
-    private val api: SpoonApi
+    private val api: SpoonApi,
 ){
-    suspend fun getRecipeList(limit: Int, offset: Int, apiKey: String): Resource<RecipeList> {
+    suspend fun getRecipeList(limit: Int, offset: Int, query: String? = null): Resource<RecipeList> {
         val response = try {
-            api.getRecipeList(limit, offset, apiKey)
+            api.getRecipeList(limit, offset, query)
         } catch (e: Exception) {
             return Resource.Error("An unknown error occured.")
         }
         return Resource.Success(response)
     }
 
-    suspend fun getRecipeDetails(RecipeName: String): Resource<Recipe> {
+    suspend fun getRecipeDetails(recipeName: String): Resource<Recipe> {
         val response = try {
-            api.getRecipeDetails(RecipeName)
+            api.getRecipeDetails(recipeName)
         } catch (e: Exception) {
             return Resource.Error("An unknown error occured.")
         }
         return Resource.Success(response)
     }
+
+    // Room database methods
+  /*  suspend fun insertRecipe(recipe: RecipeEntity) {
+        recipeDao.insertRecipe(recipe)
+    }
+
+    suspend fun getAllRecipes(): List<RecipeEntity> {
+        return recipeDao.getAllRecipes()
+    }
+
+    suspend fun getRandomRecipe(): RecipeEntity? {
+        return recipeDao.getRandomRecipe()
+    }
+
+    suspend fun deleteRecipe(recipeId: Long) {
+        recipeDao.deleteRecipe(recipeId)
+    } */
 }

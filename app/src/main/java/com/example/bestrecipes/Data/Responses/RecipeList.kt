@@ -13,4 +13,3 @@ data class Result(
     val image: String,
     val imageType: String,
 )
-

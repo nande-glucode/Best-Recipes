@@ -25,16 +25,20 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -47,16 +51,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.bestrecipes.Data.Models.RecipeListEntry
 import com.example.bestrecipes.R
-import com.google.accompanist.coil.CoilImage
-
 
 @Composable
 fun RecipeListScreen(
-    navController: NavController
+    navController: NavController,
+    viewModel: RecipeListViewModel = hiltViewModel()
 ) {
+    val recipes = viewModel.recipeList
+
     Surface(
         color = MaterialTheme.colorScheme.background,
         modifier = Modifier.fillMaxSize()
@@ -76,12 +82,13 @@ fun RecipeListScreen(
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-
+                viewModel.searchRecipeList(it)
             }
             Spacer(modifier = Modifier.height(16.dp))
             RecipeList(navController = navController)
         }
     }
+
 }
 
 @Composable
@@ -112,6 +119,9 @@ fun SearchBar(
                 .shadow(5.dp, CircleShape)
                 .background(Color.White, CircleShape)
                 .padding(horizontal = 20.dp, vertical = 12.dp)
+                .onFocusChanged {
+                    isHintDisplayed = !it.isFocused && text.isEmpty()
+                }
         )
         if(isHintDisplayed) {
             Text(
@@ -129,10 +139,11 @@ fun RecipeList(
     navController: NavController,
     viewModel: RecipeListViewModel = hiltViewModel()
 ) {
-    val recipeList by remember { viewModel.recipeList }
-    val endReached by remember { viewModel.endReached }
-    val loadError by remember { viewModel.loadError }
-    val isLoading by remember { viewModel.isLoading }
+    val recipeList by viewModel.recipeList.observeAsState(listOf())
+    val endReached by viewModel.endReached.observeAsState(false)
+    val loadError by viewModel.loadError.observeAsState("")
+    val isLoading by viewModel.isLoading.observeAsState(false)
+    val isSearching by viewModel.isSearching.observeAsState(false)
 
     LazyColumn(contentPadding = PaddingValues(16.dp)) {
         val itemCount = if(recipeList.size % 2 == 0) {
@@ -141,7 +152,7 @@ fun RecipeList(
             recipeList.size / 2 + 1
         }
         items(itemCount) {
-            if(it >= itemCount - 1 && !endReached) {
+            if(it >= itemCount - 1 && !endReached && !isLoading) {
                 viewModel.loadRecipePaginated()
             }
             RecipeRow(rowIndex = it, entries = recipeList, navController = navController)
@@ -172,9 +183,8 @@ fun RecipeEntry(
     viewModel: RecipeListViewModel = hiltViewModel()
 ) {
     val defaultDominantColor = MaterialTheme.colorScheme.surface
-    var dominantColor by remember {
-        mutableStateOf(defaultDominantColor)
-    }
+    var dominantColor by remember { mutableStateOf(defaultDominantColor) }
+    var isLoading by remember { mutableStateOf(true) }
 
     Box(
         contentAlignment = Center,
@@ -192,26 +202,33 @@ fun RecipeEntry(
             )
             .clickable {
                 navController.navigate(
-                    "pokemon_detail_screen/${dominantColor.toArgb()}/${entry.recipeName}"
+                    "recipe_detail_screen/${entry.id}"
                 )
             }
     ) {
-        Column {
-            CoilImage(
-                request = ImageRequest.Builder(LocalContext.current)
+        Column (horizontalAlignment = CenterHorizontally){
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
                     .data(entry.imageUrl)
-                    .target {
-                        viewModel.calcDominantColor(it) { color ->
-                            dominantColor = color
+                    .crossfade(true)
+                    .listener(
+                        onSuccess = { _, result ->
+                            viewModel.calcDominantColor(result.drawable) { color ->
+                                dominantColor = color
+                            }
+                            isLoading = false
+                        },
+                        onError = { _, _ ->
+                            isLoading = false
                         }
-                    }
+                    )
                     .build(),
                 contentDescription = entry.recipeName,
-                fadeIn = true,
                 modifier = Modifier
                     .size(120.dp)
                     .align(CenterHorizontally)
-            ){
+            )
+            if (isLoading) {
                 CircularProgressIndicator(
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.scale(0.5f)

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">BestRecipes</string>
+    <string name="recipe_image_desc">recipe_image_desc</string>
 </resources>
