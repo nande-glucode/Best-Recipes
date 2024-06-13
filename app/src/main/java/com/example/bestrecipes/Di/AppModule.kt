@@ -1,7 +1,11 @@
 package com.example.bestrecipes.Di
 
+import android.app.Application
+import androidx.room.Room
 import com.example.bestrecipes.Data.Remote.ApiKeyIntercepter
 import com.example.bestrecipes.Data.Remote.SpoonApi
+import com.example.bestrecipes.Database.RecipeDao
+import com.example.bestrecipes.Database.RecipeDatabase
 import com.example.bestrecipes.SpoonRepository.SpoonRepository
 import com.example.bestrecipes.Utils.Constants.BASE_URL
 import dagger.Module
@@ -21,7 +25,8 @@ object AppModule {
     @Singleton
     fun provideSpoonRepository(
         api: SpoonApi,
-    ) = SpoonRepository(api)
+        recipeDao: RecipeDao
+    ) = SpoonRepository(api, recipeDao)
 
     @Singleton
     @Provides
@@ -38,18 +43,19 @@ object AppModule {
             .create(SpoonApi::class.java)
     }
 
-  /*  @Provides
-    @Singleton
-    fun provideRecipeDatabase(app: Application): RecipeDatabase {
-        return Room.databaseBuilder(
-            app,
-            RecipeDatabase::class.java,
-            "recipe_database"
-        ).build()
-    } */
+      @Provides
+      @Singleton
+      fun provideRecipeDatabase(app: Application): RecipeDatabase {
+          return Room.databaseBuilder(
+              app,
+              RecipeDatabase::class.java,
+              "recipe_database"
+          ).build()
+      }
 
-  //  @Provides
-   /* fun provideRecipeDao(db: RecipeDatabase): RecipeDao {
-        return db.recipeDao()
-    } */
+      @Provides
+      @Singleton
+     fun provideRecipeDao(db: RecipeDatabase): RecipeDao {
+         return db.recipeDao()
+     }
 }

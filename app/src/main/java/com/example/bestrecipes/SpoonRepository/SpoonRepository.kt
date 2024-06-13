@@ -1,8 +1,10 @@
 package com.example.bestrecipes.SpoonRepository
 
+import com.example.bestrecipes.Data.Local.RecipeEntity
 import com.example.bestrecipes.Data.Remote.SpoonApi
 import com.example.bestrecipes.Data.Responses.Recipe
 import com.example.bestrecipes.Data.Responses.RecipeList
+import com.example.bestrecipes.Database.RecipeDao
 import com.example.bestrecipes.Utils.Resource
 import dagger.hilt.android.scopes.ActivityScoped
 import javax.inject.Inject
@@ -10,6 +12,7 @@ import javax.inject.Inject
 @ActivityScoped
 class SpoonRepository @Inject constructor(
     private val api: SpoonApi,
+    private val recipeDao: RecipeDao
 ){
     suspend fun getRecipeList(limit: Int, offset: Int, query: String? = null): Resource<RecipeList> {
         val response = try {
@@ -20,7 +23,7 @@ class SpoonRepository @Inject constructor(
         return Resource.Success(response)
     }
 
-    suspend fun getRecipeDetails(recipeName: String): Resource<Recipe> {
+    suspend fun getRecipeDetails(recipeName: String): Resource<RecipeEntity> {
         val response = try {
             api.getRecipeDetails(recipeName)
         } catch (e: Exception) {
@@ -30,19 +33,19 @@ class SpoonRepository @Inject constructor(
     }
 
     // Room database methods
-  /*  suspend fun insertRecipe(recipe: RecipeEntity) {
-        recipeDao.insertRecipe(recipe)
-    }
+      fun insertRecipe(recipe: RecipeEntity) {
+          recipeDao.insertRecipe(recipe)
+      }
 
-    suspend fun getAllRecipes(): List<RecipeEntity> {
-        return recipeDao.getAllRecipes()
-    }
+      fun getAllRecipes(): List<RecipeEntity> {
+          return recipeDao.getAllRecipes()
+      }
 
-    suspend fun getRandomRecipe(): RecipeEntity? {
-        return recipeDao.getRandomRecipe()
-    }
+      fun getRandomFavoriteRecipe(): RecipeEntity? {
+          return recipeDao.getRandomRecipe()
+      }
 
-    suspend fun deleteRecipe(recipeId: Long) {
-        recipeDao.deleteRecipe(recipeId)
-    } */
+      fun deleteRecipe(recipeId: Long) {
+          recipeDao.deleteRecipe(recipeId)
+      }
 }

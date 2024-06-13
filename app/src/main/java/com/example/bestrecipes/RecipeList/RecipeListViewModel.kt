@@ -56,23 +56,23 @@ class RecipeListViewModel @Inject constructor(
         loadRecipePaginated()
     }
 
-  /*  fun addRecipeToFavorites(recipe: RecipeEntity) {
-        viewModelScope.launch {
-            repository.insertRecipe(recipe)
-        }
-    }
+      fun addRecipeToFavorites(recipe: RecipeEntity) {
+          viewModelScope.launch {
+              repository.insertRecipe(recipe)
+          }
+      }
 
-    fun getRandomFavouriteRecipe() {
-        viewModelScope.launch {
-            _favoriteRecipe.postValue(repository.getRandomRecipe())
-        }
-    }
+      fun getRandomFavouriteRecipe() {
+          viewModelScope.launch {
+              _favoriteRecipe.postValue(repository.getRandomFavoriteRecipe())
+          }
+      }
 
-    fun removeRecipeFromFavorites(recipeId: Long) {
-        viewModelScope.launch {
-            repository.deleteRecipe(recipeId)
-        }
-    } */
+      fun removeRecipeFromFavorites(recipeId: Long) {
+          viewModelScope.launch {
+              repository.deleteRecipe(recipeId)
+          }
+      }
 
     fun searchRecipeList(query: String) {
         viewModelScope.launch(Dispatchers.Default) {

@@ -55,14 +55,13 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.bestrecipes.Data.Models.RecipeListEntry
 import com.example.bestrecipes.R
+import com.example.bestrecipes.RecipeDetail.RecipeDetailViewModel
 
 @Composable
 fun RecipeListScreen(
     navController: NavController,
     viewModel: RecipeListViewModel = hiltViewModel()
 ) {
-    val recipes = viewModel.recipeList
-
     Surface(
         color = MaterialTheme.colorScheme.background,
         modifier = Modifier.fillMaxSize()
@@ -85,7 +84,7 @@ fun RecipeListScreen(
                 viewModel.searchRecipeList(it)
             }
             Spacer(modifier = Modifier.height(16.dp))
-            RecipeList(navController = navController)
+            RecipeList(navController = navController, viewModel = viewModel)
         }
     }
 
@@ -202,7 +201,7 @@ fun RecipeEntry(
             )
             .clickable {
                 navController.navigate(
-                    "recipe_detail_screen/${entry.id}"
+                    "recipe_detail_screen/${dominantColor.toArgb()}${entry.id}"
                 )
             }
     ) {

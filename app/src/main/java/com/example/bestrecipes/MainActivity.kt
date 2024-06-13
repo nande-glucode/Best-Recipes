@@ -27,7 +27,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 NavHost(
                     navController = navController,
-                    startDestination = "recipe_list_screen"
+                    startDestination = "home_screen"
                 ) {
                     composable("home_screen") {
                         HomeScreen(navController = navController)
@@ -36,11 +36,8 @@ class MainActivity : ComponentActivity() {
                         RecipeListScreen(navController = navController)
                     }
                     composable(
-                        "recipe_detail_screen/{dominantColor}/{id}",
+                        "recipe_detail_screen/{id}",
                         arguments = listOf(
-                            navArgument("dominantColor") {
-                                type = NavType.IntType
-                            },
                             navArgument("id") {
                                 type = NavType.LongType
                             }

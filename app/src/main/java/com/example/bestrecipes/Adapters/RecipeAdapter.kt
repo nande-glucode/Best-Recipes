@@ -20,7 +20,7 @@ class RecipeAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-       holder.bind(getItem(position))
+        holder.bind(getItem(position))
     }
 
     class ViewHolder(private val binding: ItemRecipeBinding, private val onClick: (RecipeListEntry) -> Unit) : RecyclerView.ViewHolder(binding.root) {
@@ -36,7 +36,7 @@ class RecipeAdapter(
     class DiffCallBack : DiffUtil.ItemCallback<RecipeListEntry>() {
         override fun areItemsTheSame(oldItem: RecipeListEntry, newItem: RecipeListEntry): Boolean {
             return oldItem.id == newItem.id
-    }
+        }
         override fun areContentsTheSame(oldItem: RecipeListEntry, newItem: RecipeListEntry): Boolean {
             return oldItem == newItem
         }

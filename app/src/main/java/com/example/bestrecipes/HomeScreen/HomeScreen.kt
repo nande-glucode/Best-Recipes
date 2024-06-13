@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -18,7 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
 import com.example.bestrecipes.RecipeList.RecipeListViewModel
 
 @Composable
@@ -39,7 +40,7 @@ fun HomeScreen(
         ) {
             favouriteRecipe.value?.let { recipe ->
                 Image(
-                    painter = rememberImagePainter(recipe.image),
+                    painter = rememberAsyncImagePainter(recipe.image),
                     contentDescription = recipe.title,
                     modifier = Modifier.size(200.dp)
                 )
@@ -55,6 +56,11 @@ fun HomeScreen(
                     style = MaterialTheme.typography.headlineMedium,
                     color = Color.Gray
                 )
+            }
+            Button(onClick = {
+                navController.navigate("recipe_list_screen")
+            }) {
+                Text("Go to recipe list")
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.example.bestrecipes.Data.Remote
 
+import com.example.bestrecipes.Data.Local.RecipeEntity
 import com.example.bestrecipes.Data.Responses.Recipe
 import com.example.bestrecipes.Data.Responses.RecipeList
 import com.example.bestrecipes.Utils.Constants
@@ -19,5 +20,5 @@ interface SpoonApi {
     @GET("recipes/{name}/information")
     suspend fun getRecipeDetails(
         @Path("name") name: String,
-    ): Recipe
+    ): RecipeEntity
 }
