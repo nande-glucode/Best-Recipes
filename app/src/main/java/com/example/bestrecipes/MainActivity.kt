@@ -27,29 +27,23 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 NavHost(
                     navController = navController,
-                    startDestination = "home_screen"
+                    startDestination = NavRoutes.Home.route
                 ) {
-                    composable("home_screen") {
+                    composable(NavRoutes.Home.route) {
                         HomeScreen(navController = navController)
                     }
-                    composable("recipe_list_screen") {
+                    composable(NavRoutes.RecipeList.route) {
                         RecipeListScreen(navController = navController)
                     }
                     composable(
-                        "recipe_detail_screen/{id}",
-                        arguments = listOf(
-                            navArgument("id") {
-                                type = NavType.LongType
-                            }
+                        NavRoutes.RecipeDetail.route,
+                        arguments = listOf(navArgument("id") { type = NavType.LongType
+                        }
                         )
                     ) {
                         val dominantColor = Color(it.arguments?.getInt("dominantColor") ?: 0)
                         val id = it.arguments?.getLong("id") ?: 0L
-                        RecipeDetailScreen(
-                            navController = navController,
-                            dominantColor = dominantColor,
-                            recipeId = id
-                        )
+                        RecipeDetailScreen(recipeId = id)
                     }
                 }
             }

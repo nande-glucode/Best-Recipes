@@ -6,13 +6,13 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import com.example.bestrecipes.Data.Models.RecipeListEntry
+import com.example.bestrecipes.Data.Responses.RecipeEntity
 import com.example.bestrecipes.databinding.ItemRecipeBinding
 
 
 class RecipeAdapter(
-    private val onClick: (RecipeListEntry) -> Unit
-) : ListAdapter<RecipeListEntry, RecipeAdapter.ViewHolder>(DiffCallBack()) {
+    private val onClick: (RecipeEntity) -> Unit
+) : ListAdapter<RecipeEntity, RecipeAdapter.ViewHolder>(DiffCallBack()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemRecipeBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -23,21 +23,21 @@ class RecipeAdapter(
         holder.bind(getItem(position))
     }
 
-    class ViewHolder(private val binding: ItemRecipeBinding, private val onClick: (RecipeListEntry) -> Unit) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(recipe: RecipeListEntry) {
-            binding.recipeName.text = recipe.recipeName
-            binding.recipeImage.load(recipe.imageUrl)
+    class ViewHolder(private val binding: ItemRecipeBinding, private val onClick: (RecipeEntity) -> Unit) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(recipe: RecipeEntity) {
+            binding.recipeName.text = recipe.title
+            binding.recipeImage.load(recipe.image)
             binding.root.setOnClickListener {
                 onClick(recipe)
             }
         }
     }
 
-    class DiffCallBack : DiffUtil.ItemCallback<RecipeListEntry>() {
-        override fun areItemsTheSame(oldItem: RecipeListEntry, newItem: RecipeListEntry): Boolean {
+    class DiffCallBack : DiffUtil.ItemCallback<RecipeEntity>() {
+        override fun areItemsTheSame(oldItem: RecipeEntity, newItem: RecipeEntity): Boolean {
             return oldItem.id == newItem.id
         }
-        override fun areContentsTheSame(oldItem: RecipeListEntry, newItem: RecipeListEntry): Boolean {
+        override fun areContentsTheSame(oldItem: RecipeEntity, newItem: RecipeEntity): Boolean {
             return oldItem == newItem
         }
     }

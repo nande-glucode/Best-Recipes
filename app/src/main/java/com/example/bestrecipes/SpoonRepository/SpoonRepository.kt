@@ -1,8 +1,9 @@
 package com.example.bestrecipes.SpoonRepository
 
-import com.example.bestrecipes.Data.Local.RecipeEntity
 import com.example.bestrecipes.Data.Remote.SpoonApi
-import com.example.bestrecipes.Data.Responses.Recipe
+import com.example.bestrecipes.Data.Responses.Instructions
+import com.example.bestrecipes.Data.Responses.RecipeEntity
+import com.example.bestrecipes.Data.Responses.RecipeEntry
 import com.example.bestrecipes.Data.Responses.RecipeList
 import com.example.bestrecipes.Database.RecipeDao
 import com.example.bestrecipes.Utils.Resource
@@ -14,18 +15,18 @@ class SpoonRepository @Inject constructor(
     private val api: SpoonApi,
     private val recipeDao: RecipeDao
 ){
-    suspend fun getRecipeList(limit: Int, offset: Int, query: String? = null): Resource<RecipeList> {
+    suspend fun getRecipeList(number: Int, offset: Int, query: String? = null): Resource<RecipeList> {
         val response = try {
-            api.getRecipeList(limit, offset, query)
+            api.getRecipeList(number, offset, query)
         } catch (e: Exception) {
             return Resource.Error("An unknown error occured.")
         }
         return Resource.Success(response)
     }
 
-    suspend fun getRecipeDetails(recipeName: String): Resource<RecipeEntity> {
+    suspend fun getRecipeInstructions(recipeId: Long): Resource<List<Instructions>> {
         val response = try {
-            api.getRecipeDetails(recipeName)
+            api.getRecipeInstructions(recipeId)
         } catch (e: Exception) {
             return Resource.Error("An unknown error occured.")
         }
@@ -33,15 +34,15 @@ class SpoonRepository @Inject constructor(
     }
 
     // Room database methods
-      fun insertRecipe(recipe: RecipeEntity) {
+      fun insertRecipe(recipe: RecipeEntry) {
           recipeDao.insertRecipe(recipe)
       }
 
-      fun getAllRecipes(): List<RecipeEntity> {
+      fun getAllRecipes(): List<RecipeEntry> {
           return recipeDao.getAllRecipes()
       }
 
-      fun getRandomFavoriteRecipe(): RecipeEntity? {
+      fun getRandomFavoriteRecipe(): RecipeEntry? {
           return recipeDao.getRandomRecipe()
       }
 

@@ -25,13 +25,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -53,9 +51,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.bestrecipes.Data.Models.RecipeListEntry
+import com.example.bestrecipes.Data.Responses.RecipeEntity
+import com.example.bestrecipes.NavRoutes
 import com.example.bestrecipes.R
-import com.example.bestrecipes.RecipeDetail.RecipeDetailViewModel
 
 @Composable
 fun RecipeListScreen(
@@ -133,18 +131,18 @@ fun SearchBar(
     }
 }
 
-@Composable
-fun RecipeList(
+@Composable fun RecipeList(
     navController: NavController,
     viewModel: RecipeListViewModel = hiltViewModel()
 ) {
-    val recipeList by viewModel.recipeList.observeAsState(listOf())
-    val endReached by viewModel.endReached.observeAsState(false)
-    val loadError by viewModel.loadError.observeAsState("")
-    val isLoading by viewModel.isLoading.observeAsState(false)
-    val isSearching by viewModel.isSearching.observeAsState(false)
+    val recipeList by viewModel.recipeList. observeAsState( listOf( ) )
+    val endReached by viewModel.endReached. observeAsState( false)
+    val loadError by viewModel.loadError. observeAsState( " " )
+    val isLoading by viewModel.isLoading. observeAsState( false)
 
-    LazyColumn(contentPadding = PaddingValues(16.dp)) {
+
+    LazyColumn(contentPadding = PaddingValues(16.dp)
+    )  {
         val itemCount = if(recipeList.size % 2 == 0) {
             recipeList.size / 2
         } else {
@@ -152,7 +150,7 @@ fun RecipeList(
         }
         items(itemCount) {
             if(it >= itemCount - 1 && !endReached && !isLoading) {
-                viewModel.loadRecipePaginated()
+                viewModel.loadRecipePaginated( )
             }
             RecipeRow(rowIndex = it, entries = recipeList, navController = navController)
         }
@@ -160,23 +158,22 @@ fun RecipeList(
 
     Box(
         contentAlignment = Center,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize( )
     ) {
         if(isLoading) {
-            CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+            CircularProgressIndicator( color = MaterialTheme.colorScheme. primary)
         }
-        if(loadError.isNotEmpty()) {
+        if(loadError.isNotEmpty( ) )  {
             RetrySection(error = loadError) {
-                viewModel.loadRecipePaginated()
+                viewModel.loadRecipePaginated( )
             }
         }
     }
-
 }
 
 @Composable
 fun RecipeEntry(
-    entry: RecipeListEntry,
+    entry: RecipeEntity,
     navController: NavController,
     modifier: Modifier = Modifier,
     viewModel: RecipeListViewModel = hiltViewModel()
@@ -200,15 +197,13 @@ fun RecipeEntry(
                 )
             )
             .clickable {
-                navController.navigate(
-                    "recipe_detail_screen/${dominantColor.toArgb()}${entry.id}"
-                )
+               navController.navigate(NavRoutes.RecipeDetail.createRoute(entry.id))
             }
     ) {
         Column (horizontalAlignment = CenterHorizontally){
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(entry.imageUrl)
+                    .data(entry.title)
                     .crossfade(true)
                     .listener(
                         onSuccess = { _, result ->
@@ -222,7 +217,7 @@ fun RecipeEntry(
                         }
                     )
                     .build(),
-                contentDescription = entry.recipeName,
+                contentDescription = entry.title,
                 modifier = Modifier
                     .size(120.dp)
                     .align(CenterHorizontally)
@@ -234,7 +229,7 @@ fun RecipeEntry(
                 )
             }
             Text(
-                text = entry.recipeName,
+                text = entry.image,
                 fontSize = 20.sp,
                 fontFamily = FontFamily.SansSerif,
                 textAlign = TextAlign.Center,
@@ -247,7 +242,7 @@ fun RecipeEntry(
 @Composable
 fun RecipeRow(
     rowIndex: Int,
-    entries: List<RecipeListEntry>,
+    entries: List<RecipeEntity>,
     navController: NavController
 ) {
     Column {

@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,6 +29,9 @@ fun HomeScreen(
     viewModel: RecipeListViewModel = hiltViewModel()
 ) {
     val favouriteRecipe = viewModel.favoriteRecipe.observeAsState()
+    LaunchedEffect(Unit) {
+
+    }
 
     Surface(
         color = MaterialTheme.colorScheme.background,

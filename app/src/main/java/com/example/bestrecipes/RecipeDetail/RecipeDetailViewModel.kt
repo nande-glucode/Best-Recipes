@@ -1,28 +1,57 @@
 package com.example.bestrecipes.RecipeDetail
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.bestrecipes.Data.Local.RecipeEntity
+import com.example.bestrecipes.Data.Responses.Instructions
+import com.example.bestrecipes.Data.Responses.RecipeEntity
 import com.example.bestrecipes.SpoonRepository.SpoonRepository
+import com.example.bestrecipes.Utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class RecipeDetailViewModel @Inject constructor(
-    private val repository: SpoonRepository
-): ViewModel() {
+    private val repository: SpoonRepository,
+    savedStateHandle: SavedStateHandle
+) : ViewModel() {
 
-    fun getRecipeById(recipeId: Long) {
-        viewModelScope.launch {
-            repository.getRecipeDetails(recipeId.toString())
+
+    private val _instructionList = MutableLiveData<List<Instructions>>()
+    val instructionList: LiveData<List<Instructions>> get() = _instructionList
+
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> get() = _isLoading
+
+    private val _loadError = MutableLiveData<String>()
+    val loadError: LiveData<String> get() = _loadError
+
+    init {
+        val recipeId = savedStateHandle.get<Long>("id")
+        if (recipeId != null) {
+            loadRecipeInstructions(recipeId)
         }
     }
 
-     fun addRecipeToFavorites(recipe: RecipeEntity) {
-         viewModelScope.launch {
-             repository.insertRecipe(recipe)
-         }
-     }
+    fun loadRecipeInstructions(recipeId: Long) {
+        viewModelScope.launch {
+            _isLoading.postValue(true)
+            val result = repository.getRecipeInstructions(recipeId)
+            when (result) {
+                is Resource.Success -> {
+                    _instructionList.postValue(result.data)
+                    _isLoading.postValue(false)
+                }
+                is Resource.Error -> {
+                    _loadError.postValue(result.message!!)
+                    _isLoading.postValue(false)
+                }
 
+                is Resource.Loading -> TODO()
+            }
+        }
+    }
 }
