@@ -13,6 +13,7 @@ data class RecipeEntity(
     val image: String,
     val instructions: List<Instructions>
 )
+
 data class Instructions(
     val name: String,
     val steps: List<Step>,

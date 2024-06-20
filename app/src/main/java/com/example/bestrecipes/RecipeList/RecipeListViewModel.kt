@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.palette.graphics.Palette
+import com.example.bestrecipes.Data.Responses.Instructions
 import com.example.bestrecipes.Data.Responses.RecipeEntity
 import com.example.bestrecipes.SpoonRepository.SpoonRepository
 import com.example.bestrecipes.Utils.Constants.PAGE_SIZE
@@ -47,6 +48,9 @@ class RecipeListViewModel @Inject constructor(
 
     private val _favoriteRecipe = MutableLiveData<RecipeEntity?>()
     val favoriteRecipe: LiveData<RecipeEntity?> get() = _favoriteRecipe
+
+    private val _selectedRecipeInstructions = MutableLiveData<List<Instructions>>()
+    val selectedRecipeInstructions: LiveData<List<Instructions>> get() = _selectedRecipeInstructions
 
     init {
         loadRecipePaginated()
@@ -110,7 +114,7 @@ class RecipeListViewModel @Inject constructor(
                         } else {
                             "https://img.spoonacular.com/recipes/716429-312x231.jpg"
                         }
-                        RecipeEntity(recipeNumber.toLong(), url, name, instructions)
+                        RecipeEntity(entry.id, url, name, instructions)
                     }
                     curPage++
 
@@ -129,7 +133,6 @@ class RecipeListViewModel @Inject constructor(
             }
         }
     }
-
 
 
     fun calcDominantColor(drawable: Drawable, onFinish: (Color) -> Unit) {

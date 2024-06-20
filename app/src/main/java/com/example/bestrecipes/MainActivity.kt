@@ -37,9 +37,7 @@ class MainActivity : ComponentActivity() {
                     }
                     composable(
                         NavRoutes.RecipeDetail.route,
-                        arguments = listOf(navArgument("id") { type = NavType.LongType
-                        }
-                        )
+                        arguments = listOf(navArgument("id") { type = NavType.LongType })
                     ) {
                         val dominantColor = Color(it.arguments?.getInt("dominantColor") ?: 0)
                         val id = it.arguments?.getLong("id") ?: 0L
