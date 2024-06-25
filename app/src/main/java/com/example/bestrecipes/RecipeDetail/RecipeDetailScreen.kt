@@ -1,38 +1,23 @@
 package com.example.bestrecipes.RecipeDetail
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement.Center
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -45,13 +30,11 @@ import com.example.bestrecipes.Data.Responses.Instructions
 import com.example.bestrecipes.Data.Responses.RecipeEntity
 import com.example.bestrecipes.Data.Responses.Step
 import com.example.bestrecipes.R
-import com.example.bestrecipes.RecipeList.RecipeList
-import com.example.bestrecipes.RecipeList.RecipeListViewModel
-import com.example.bestrecipes.RecipeList.RecipeRow
-import com.example.bestrecipes.RecipeList.RetrySection
 
 @Composable
 fun RecipeDetailScreen(
+    navController: NavController,
+    recipeEntity: RecipeEntity,
     viewModel: RecipeDetailViewModel = hiltViewModel(),
     recipeId: Long
 ) {
@@ -61,52 +44,90 @@ fun RecipeDetailScreen(
     ) {
         Column {
             Spacer(modifier = Modifier.height(20.dp))
-            Image(
-                painter = painterResource(id = R.drawable.logo),
-                contentDescription = "Recipe",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.CenterHorizontally)
+            IconButton(onClick = { navController.popBackStack() }) {
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+            }
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(recipeEntity.image)
+                    .build(),
+                contentDescription = recipeEntity.title,
+                modifier = Modifier.size(50.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
-            InstructionList(recipeId = recipeId, viewModel = viewModel)
+            InstructionList(viewModel = viewModel, recipeEntity = recipeEntity)
+        }
+    }
+}
+
+@SuppressLint("SuspiciousIndentation")
+@Composable
+fun InstructionList(
+    recipeEntity: RecipeEntity,
+    viewModel: RecipeDetailViewModel = hiltViewModel()
+) {
+    val instructionList by viewModel.instructionList.observeAsState(listOf())
+    val isFavourite by viewModel.isFavoriteRecipe.observeAsState(recipeEntity.isFavorite)
+    val isLoading by viewModel.isLoading.observeAsState(false)
+    val loadError by viewModel.loadError.observeAsState("")
+
+    var showIngredients by remember { mutableStateOf(true) }
+
+    if (isLoading) {
+        CircularProgressIndicator()
+    } else if (loadError.isNotEmpty()) {
+        Text(text = loadError, color = MaterialTheme.colorScheme.error)
+    } else {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                FilledTonalButton(onClick = { showIngredients = true }) {
+                    Text(text = "Ingredients")
+                }
+                FilledTonalButton(onClick = { showIngredients = false }) {
+                    Text(text = "Equipment")
+                }
+            }
+
+            if (showIngredients) {
+                IngredientsList(instructionList = instructionList)
+            } else {
+                EquipmentList(instructionList = instructionList)
+            }
+
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(instructionList) { instruction ->
+                    Text(text = instruction.name, style = MaterialTheme.typography.bodyMedium)
+                    instruction.steps.forEachIndexed { index, step ->
+                        StepItem(step = step, stepNumber = index + 1)
+                    }
+                    FilledTonalButton(onClick = {
+                        if (isFavourite) {
+                            viewModel.removeFromFavorites(recipeEntity)
+                        } else {
+                            viewModel.toggleFavoriteStatus(recipeEntity)
+                        }
+                    }) {
+                        Text(text = if (isFavourite) "Remove from Favorites" else "Add to Favorites")
+                    }
+                }
+            }
         }
     }
 }
 
 @Composable
-fun InstructionList(
-    recipeId: Long,
-    viewModel: RecipeDetailViewModel = hiltViewModel()
-) {
-    val instructionList by viewModel.instructionList.observeAsState(listOf())
-    val isLoading by viewModel.isLoading.observeAsState(false)
-    val loadError by viewModel.loadError.observeAsState("")
-
-            if (isLoading) {
-                CircularProgressIndicator()
-            } else if (loadError.isNotEmpty()) {
-                Text(text = loadError, color = MaterialTheme.colorScheme.error)
-            } else {
-                Column {
-                    instructionList.forEach { instruction ->
-                        Text(text = instruction.name, style = MaterialTheme.typography.bodyMedium)
-                        instruction.steps.forEach { step ->
-                            StepItem(step = step)
-                        }
-                    }
-                }
-            }
-}
-
-@Composable
-fun StepItem(step: Step) {
-    Column {
-        Text(text = step.step, style = MaterialTheme.typography.bodyMedium)
-        Row {
+fun IngredientsList(instructionList: List<Instructions>) {
+    val scrollState = rememberScrollState()
+    Row(modifier = Modifier.horizontalScroll(scrollState)) {
+        instructionList.flatMap { it.steps }.forEach { step ->
             step.ingredients.forEach { ingredient ->
                 Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
+                    horizontalAlignment = CenterHorizontally,
                     modifier = Modifier.padding(8.dp)
                 ) {
                     AsyncImage(
@@ -120,10 +141,17 @@ fun StepItem(step: Step) {
                 }
             }
         }
-        Row {
+    }
+}
+
+@Composable
+fun EquipmentList(instructionList: List<Instructions>) {
+    val scrollState = rememberScrollState()
+    Row(modifier = Modifier.horizontalScroll(scrollState)) {
+        instructionList.flatMap { it.steps }.forEach { step ->
             step.equipment.forEach { equipment ->
                 Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
+                    horizontalAlignment = CenterHorizontally,
                     modifier = Modifier.padding(8.dp)
                 ) {
                     AsyncImage(
@@ -137,7 +165,28 @@ fun StepItem(step: Step) {
                 }
             }
         }
-        Spacer(modifier = Modifier.height(8.dp))
+    }
+}
+
+@Composable
+fun StepItem(step: Step, stepNumber: Int) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        elevation = CardDefaults.cardElevation(4.dp),
+        shape = RoundedCornerShape(8.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(
+                text = "Step $stepNumber",
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            Text(text = step.step, style = MaterialTheme.typography.bodyMedium)
+        }
     }
 }
 
@@ -151,14 +200,12 @@ fun InstructionRow(
         Row {
             InstructionItem(
                 instruction = steps[rowIndex * 2],
-                navController = navController,
                 modifier = Modifier.weight(1f)
             )
             Spacer(modifier = Modifier.width(16.dp))
             if (steps.size >= rowIndex * 2 + 2) {
                 InstructionItem(
                     instruction = steps[rowIndex * 2 + 1],
-                    navController = navController,
                     modifier = Modifier.weight(1f)
                 )
             } else {
@@ -172,36 +219,34 @@ fun InstructionRow(
 @Composable
 fun InstructionItem(
     instruction: Instructions,
-    navController: NavController,
     modifier: Modifier = Modifier,
     viewModel: RecipeDetailViewModel = hiltViewModel()
 ) {
     val isLoading by viewModel.isLoading.observeAsState(false)
 
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = modifier
-                    .shadow(5.dp, RoundedCornerShape(10.dp))
-                    .clip(RoundedCornerShape(10.dp))
-                    .aspectRatio(1f)
-
-            ) {
-                Column(
-                    verticalArrangement = Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    if (isLoading) {
-                        CircularProgressIndicator(
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.align(CenterHorizontally)
-                        )
-                    }
-                    Text(
-                        text = instruction.name,
-                        style = MaterialTheme.typography.bodyMedium,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
+            .shadow(5.dp, RoundedCornerShape(10.dp))
+            .clip(RoundedCornerShape(10.dp))
+            .aspectRatio(1f)
+    ) {
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            if (isLoading) {
+                CircularProgressIndicator(
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.align(CenterHorizontally)
+                )
             }
+            Text(
+                text = instruction.name,
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    }
 }

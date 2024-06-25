@@ -10,6 +10,7 @@ import com.example.bestrecipes.Data.Responses.RecipeEntity
 import com.example.bestrecipes.SpoonRepository.SpoonRepository
 import com.example.bestrecipes.Utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -34,29 +35,49 @@ class RecipeDetailViewModel @Inject constructor(
     private val _endReached = MutableLiveData<Boolean>()
     val endReached: LiveData<Boolean> get() = _endReached
 
+    private val recipeId: Long = savedStateHandle["id"] ?: 0
+
+    private val _isFavoriteRecipe = MutableLiveData<Boolean>()
+    val isFavoriteRecipe: LiveData<Boolean> get() = _isFavoriteRecipe
+
     init {
-        val recipeId = savedStateHandle.get<Long>("id")
-        if (recipeId != null) {
-            loadRecipeInstructions(recipeId)
+        loadRecipeInstructions(recipeId)
+        }
+
+     private fun loadRecipeInstructions(recipeId: Long) {
+         viewModelScope.launch {
+             _isLoading.postValue(true)
+             val result = repository.getRecipeInstructions(recipeId)
+             when (result) {
+                 is Resource.Success -> {
+                     _instructionList.postValue(result.data!!)
+                     _isLoading.postValue(false)
+                 }
+                 is Resource.Error -> {
+                     _loadError.postValue(result.message!!)
+                     _isLoading.postValue(false)
+                 }
+                 is Resource.Loading -> {
+                 }
+             }
+         }
+     }
+
+    fun toggleFavoriteStatus(recipeEntity: RecipeEntity) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val isFavorite = recipeEntity.isFavorite
+            recipeEntity.isFavorite = !isFavorite
+            repository.insertRecipe(recipeEntity)
+            repository.updateFavoriteStatus(recipeEntity.id, recipeEntity.isFavorite)
+            _isFavoriteRecipe.postValue(recipeEntity.isFavorite)
         }
     }
 
-    private fun loadRecipeInstructions(recipeId: Long) {
-        viewModelScope.launch {
-            _isLoading.postValue(true)
-            val result = repository.getRecipeInstructions(recipeId)
-            when (result) {
-                is Resource.Success -> {
-                    _instructionList.postValue(result.data!!)
-                    _isLoading.postValue(false)
-                }
-                is Resource.Error -> {
-                    _loadError.postValue(result.message!!)
-                    _isLoading.postValue(false)
-                }
-                is Resource.Loading -> {
-                }
-            }
+    fun removeFromFavorites(recipe: RecipeEntity) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.updateFavoriteStatus(recipe.id, false)
+            _isFavoriteRecipe.postValue(false)
         }
     }
+
 }

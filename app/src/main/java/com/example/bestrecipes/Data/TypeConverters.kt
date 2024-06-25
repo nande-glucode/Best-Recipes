@@ -2,22 +2,36 @@ package com.example.bestrecipes.Data
 
 import androidx.room.TypeConverter
 import com.example.bestrecipes.Data.Responses.Instructions
+import com.example.bestrecipes.Data.Responses.Step
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
-class Converters {
-
+object Converters {
     @TypeConverter
-    fun fromInstructionsList(value: List<Instructions>?): String? {
+    @JvmStatic
+    fun fromInstructionsList(value: List<Instructions>): String {
         val gson = Gson()
         val type = object : TypeToken<List<Instructions>>() {}.type
         return gson.toJson(value, type)
     }
 
     @TypeConverter
-    fun toInstructionsList(value: String?): List<Instructions>? {
-        val gson = Gson()
-        val type = object : TypeToken<List<Instructions>>() {}.type
-        return gson.fromJson(value, type)
+    @JvmStatic
+    fun toInstructionsList(value: String): List<Instructions> {
+        val listType = object : TypeToken<List<Instructions>>() {}.type
+        return Gson().fromJson(value, listType)
+    }
+
+    @TypeConverter
+    @JvmStatic
+    fun fromStepList(steps: List<Step>): String {
+        return Gson().toJson(steps)
+    }
+
+    @TypeConverter
+    @JvmStatic
+    fun toStepList(json: String): List<Step> {
+        val type = object : TypeToken<List<Step>>() {}.type
+        return Gson().fromJson(json, type)
     }
 }

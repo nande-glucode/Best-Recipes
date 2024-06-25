@@ -125,4 +125,7 @@ dependencies {
     implementation("androidx.room:room-ktx:2.5.1")
 
     implementation("com.google.code.gson:gson:2.8.8")
+
+    implementation("androidx.compose.ui:ui-text-google-fonts:1.2.0-beta02")
+
 }

@@ -10,6 +10,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.bestrecipes.Data.Responses.Instructions
+import com.example.bestrecipes.Data.Responses.RecipeEntity
 import com.example.bestrecipes.HomeScreen.HomeScreen
 import com.example.bestrecipes.RecipeDetail.RecipeDetailScreen
 import com.example.bestrecipes.RecipeList.RecipeListScreen
@@ -33,15 +35,26 @@ class MainActivity : ComponentActivity() {
                         HomeScreen(navController = navController)
                     }
                     composable(NavRoutes.RecipeList.route) {
-                        RecipeListScreen(navController = navController)
+                        val recipeId = it.arguments?.getLong("id") ?: 0L
+                        RecipeListScreen(navController = navController, recipeId = recipeId)
                     }
                     composable(
                         NavRoutes.RecipeDetail.route,
                         arguments = listOf(navArgument("id") { type = NavType.LongType })
                     ) {
-                        val dominantColor = Color(it.arguments?.getInt("dominantColor") ?: 0)
                         val id = it.arguments?.getLong("id") ?: 0L
-                        RecipeDetailScreen(recipeId = id)
+                        val instructions = emptyList<Instructions>()
+                        val recipeEntity = RecipeEntity(
+                            id = id,
+                            title = "",
+                            image = "",
+                            isFavorite = false,
+                            readyInMinutes = 0,
+                            servings = 0,
+                            summary = "",
+                            instructions = instructions ?: emptyList()
+                        )
+                        RecipeDetailScreen(recipeId = id, navController = navController, recipeEntity = recipeEntity)
                     }
                 }
             }

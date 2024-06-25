@@ -1,5 +1,11 @@
 package com.example.bestrecipes.Data.Responses
 
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import com.example.bestrecipes.Data.Converters
+
 data class RecipeList(
     val results: List<RecipeEntity>,
     val offset: Long,
@@ -7,11 +13,16 @@ data class RecipeList(
     val totalResults: Long,
 )
 
+@Entity(tableName = "favorite_recipes")
 data class RecipeEntity(
-    val id: Long,
-    val title: String,
-    val image: String,
-    val instructions: List<Instructions>
+    @PrimaryKey val id: Long,
+    @ColumnInfo(name = "title") val title: String,
+    @ColumnInfo(name = "image") val image: String,
+    @ColumnInfo(name = "readyInMinutes") val readyInMinutes: Int,
+    @ColumnInfo(name = "servings") val servings: Int,
+    @ColumnInfo(name = "summary") val summary: String,
+    @ColumnInfo(name = "isFavorite") var isFavorite: Boolean,
+    @ColumnInfo @TypeConverters(Converters::class) val instructions: List<Instructions>
 )
 
 data class Instructions(

@@ -14,11 +14,15 @@ interface SpoonApi {
         @Query("number") limit: Int,
         @Query("offset") offset: Int,
         @Query("query") query: String? = null,
-        @Query("addRecipeInstructions") addRecipeInstructions: Boolean = true
     ): RecipeList
 
     @GET("recipes/{id}/analyzedInstructions")
     suspend fun getRecipeInstructions(
         @Path("id") id: Long,
     ): List<Instructions>
+
+    @GET("recipes/{id}/information")
+    suspend fun getRecipeInformation(
+        @Path("id") id: Long,
+    ): RecipeList
 }

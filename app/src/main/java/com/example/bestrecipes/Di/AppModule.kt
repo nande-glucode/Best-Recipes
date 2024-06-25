@@ -49,9 +49,11 @@ object AppModule {
           return Room.databaseBuilder(
               app,
               RecipeDatabase::class.java,
-              "recipe_database"
+              "favorite_recipes"
           ).build()
+
       }
+
 
       @Provides
       @Singleton
