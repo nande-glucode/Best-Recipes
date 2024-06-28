@@ -1,6 +1,6 @@
-package com.example.bestrecipes.Data.Remote
+package com.example.bestrecipes.data.remote
 
-import com.example.bestrecipes.Utils.Constants.API_KEY
+import com.example.bestrecipes.utils.Constants.API_KEY
 import okhttp3.Interceptor
 import okhttp3.Response
 

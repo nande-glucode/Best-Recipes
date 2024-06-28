@@ -1,8 +1,8 @@
-package com.example.bestrecipes.Data
+package com.example.bestrecipes.data
 
 import androidx.room.TypeConverter
-import com.example.bestrecipes.Data.Responses.Instructions
-import com.example.bestrecipes.Data.Responses.Step
+import com.example.bestrecipes.data.responses.Instructions
+import com.example.bestrecipes.data.responses.Step
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 

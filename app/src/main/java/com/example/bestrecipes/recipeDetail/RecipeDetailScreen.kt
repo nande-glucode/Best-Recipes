@@ -1,7 +1,6 @@
-package com.example.bestrecipes.RecipeDetail
+package com.example.bestrecipes.recipeDetail
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,43 +18,50 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.bestrecipes.Data.Responses.Instructions
-import com.example.bestrecipes.Data.Responses.RecipeEntity
-import com.example.bestrecipes.Data.Responses.Step
-import com.example.bestrecipes.R
+import com.example.bestrecipes.BottomNavigationBar
+import com.example.bestrecipes.data.responses.Instructions
+import com.example.bestrecipes.data.responses.RecipeEntity
+import com.example.bestrecipes.data.responses.Step
+
 
 @Composable
 fun RecipeDetailScreen(
     navController: NavController,
     recipeEntity: RecipeEntity,
     viewModel: RecipeDetailViewModel = hiltViewModel(),
-    recipeId: Long
+    recipeId: Long,
+    currentDestination: String?
 ) {
-    Surface(
-        color = MaterialTheme.colorScheme.background,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Column {
-            Spacer(modifier = Modifier.height(20.dp))
-            IconButton(onClick = { navController.popBackStack() }) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+    Scaffold(
+        bottomBar = { BottomNavigationBar(navController, currentDestination) }
+    ) { innerPadding ->
+        Surface(
+            color = MaterialTheme.colorScheme.background,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            Column {
+                Spacer(modifier = Modifier.height(20.dp))
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                }
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(recipeEntity.image)
+                        .build(),
+                    contentDescription = recipeEntity.title,
+                    modifier = Modifier.size(50.dp)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                InstructionList(viewModel = viewModel, recipeEntity = recipeEntity)
             }
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(recipeEntity.image)
-                    .build(),
-                contentDescription = recipeEntity.title,
-                modifier = Modifier.size(50.dp)
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            InstructionList(viewModel = viewModel, recipeEntity = recipeEntity)
         }
     }
 }

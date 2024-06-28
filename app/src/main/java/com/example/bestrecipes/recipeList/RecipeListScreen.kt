@@ -1,4 +1,4 @@
-package com.example.bestrecipes.RecipeList
+package com.example.bestrecipes.recipeList
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -22,6 +22,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,7 +33,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
-import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
@@ -50,42 +50,46 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.bestrecipes.Data.Responses.RecipeEntity
+import com.example.bestrecipes.BottomNavigationBar
+import com.example.bestrecipes.data.responses.RecipeEntity
 import com.example.bestrecipes.NavRoutes
 import com.example.bestrecipes.R
-import com.example.bestrecipes.RecipeDetail.RecipeDetailViewModel
+import com.example.bestrecipes.recipeDetail.RecipeDetailViewModel
 
 @Composable
 fun RecipeListScreen(
     recipeId: Long,
     navController: NavController,
+    currentDestination: String,
     viewModel: RecipeListViewModel = hiltViewModel()
 ) {
     val backgroundColor = colorResource(id = R.color.background)
 
-    Surface(
-        color = MaterialTheme.colorScheme.background,
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = backgroundColor)
-    ) {
-        Column(
+    Scaffold(
+        bottomBar = { BottomNavigationBar(navController, currentDestination) },
+    ) { innerPadding ->
+        Surface(
+            color = MaterialTheme.colorScheme.background,
             modifier = Modifier
-                .fillMaxWidth()
-                .background(color = backgroundColor)
-                .padding(16.dp)
+                .fillMaxSize()
+                .padding(innerPadding)
         ) {
-            TopSection()
-            SearchBar(modifier = Modifier
-                .background(color = backgroundColor)){
-                viewModel.searchRecipeList(it)
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = backgroundColor)
+                    .padding(16.dp)
+            ) {
+                TopSection()
+                SearchBar(modifier = Modifier
+                    .background(color = backgroundColor)){
+                    viewModel.searchRecipeList(it)
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                RecipeList(navController = navController, viewModel = viewModel, recipeId = recipeId)
             }
-            Spacer(modifier = Modifier.height(16.dp))
-            RecipeList(navController = navController, viewModel = viewModel, recipeId = recipeId)
-
         }
     }
-
 }
 
 @Composable
@@ -212,7 +216,6 @@ fun RecipeEntry(
     Card(
         shape = RoundedCornerShape(20.dp),
         modifier = modifier
-            .fillMaxWidth()
             .shadow(5.dp, RoundedCornerShape(16.dp))
             .clip(RoundedCornerShape(10.dp))
             .background(color = backgroundColor)
@@ -223,7 +226,6 @@ fun RecipeEntry(
     ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
                 .background(color = colorResource(id = R.color.primary))
 
         ) {

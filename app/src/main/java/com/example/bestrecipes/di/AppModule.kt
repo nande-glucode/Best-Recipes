@@ -1,13 +1,13 @@
-package com.example.bestrecipes.Di
+package com.example.bestrecipes.di
 
 import android.app.Application
 import androidx.room.Room
-import com.example.bestrecipes.Data.Remote.ApiKeyIntercepter
-import com.example.bestrecipes.Data.Remote.SpoonApi
-import com.example.bestrecipes.Database.RecipeDao
-import com.example.bestrecipes.Database.RecipeDatabase
-import com.example.bestrecipes.SpoonRepository.SpoonRepository
-import com.example.bestrecipes.Utils.Constants.BASE_URL
+import com.example.bestrecipes.data.remote.ApiKeyIntercepter
+import com.example.bestrecipes.data.remote.SpoonApi
+import com.example.bestrecipes.data.database.RecipeDao
+import com.example.bestrecipes.data.database.RecipeDatabase
+import com.example.bestrecipes.spoonRepository.SpoonRepository
+import com.example.bestrecipes.utils.Constants.BASE_URL
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

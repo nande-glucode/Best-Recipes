@@ -1,10 +1,10 @@
-package com.example.bestrecipes.Data.Responses
+package com.example.bestrecipes.data.responses
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
-import com.example.bestrecipes.Data.Converters
+import com.example.bestrecipes.data.Converters
 
 data class RecipeList(
     val results: List<RecipeEntity>,

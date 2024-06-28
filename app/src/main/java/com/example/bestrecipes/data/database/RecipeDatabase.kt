@@ -1,13 +1,10 @@
-package com.example.bestrecipes.Database
+package com.example.bestrecipes.data.database
 
-import android.util.Log
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
-import com.example.bestrecipes.Data.Converters
-import com.example.bestrecipes.Data.Responses.RecipeEntity
+import com.example.bestrecipes.data.Converters
+import com.example.bestrecipes.data.responses.RecipeEntity
 
 @Database(entities = [RecipeEntity::class], version = 2)
 @TypeConverters(Converters::class)
