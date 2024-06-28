@@ -1,11 +1,11 @@
-package com.example.bestrecipes.SpoonRepository
+package com.example.bestrecipes.spoonRepository
 
-import com.example.bestrecipes.Data.Remote.SpoonApi
-import com.example.bestrecipes.Data.Responses.Instructions
-import com.example.bestrecipes.Data.Responses.RecipeEntity
-import com.example.bestrecipes.Data.Responses.RecipeList
-import com.example.bestrecipes.Database.RecipeDao
-import com.example.bestrecipes.Utils.Resource
+import com.example.bestrecipes.data.remote.SpoonApi
+import com.example.bestrecipes.data.responses.Instructions
+import com.example.bestrecipes.data.responses.RecipeEntity
+import com.example.bestrecipes.data.responses.RecipeList
+import com.example.bestrecipes.data.database.RecipeDao
+import com.example.bestrecipes.utils.Resource
 import dagger.hilt.android.scopes.ActivityScoped
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

@@ -1,10 +1,10 @@
-package com.example.bestrecipes.Database
+package com.example.bestrecipes.data.database
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.bestrecipes.Data.Responses.RecipeEntity
+import com.example.bestrecipes.data.responses.RecipeEntity
 
 
 @Dao

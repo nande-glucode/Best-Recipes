@@ -1,14 +1,14 @@
-package com.example.bestrecipes.RecipeDetail
+package com.example.bestrecipes.recipeDetail
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.bestrecipes.Data.Responses.Instructions
-import com.example.bestrecipes.Data.Responses.RecipeEntity
-import com.example.bestrecipes.SpoonRepository.SpoonRepository
-import com.example.bestrecipes.Utils.Resource
+import com.example.bestrecipes.data.responses.Instructions
+import com.example.bestrecipes.data.responses.RecipeEntity
+import com.example.bestrecipes.spoonRepository.SpoonRepository
+import com.example.bestrecipes.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

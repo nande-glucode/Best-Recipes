@@ -1,8 +1,7 @@
-package com.example.bestrecipes.Data.Remote
+package com.example.bestrecipes.data.remote
 
-import com.example.bestrecipes.Data.Responses.Instructions
-import com.example.bestrecipes.Data.Responses.RecipeEntity
-import com.example.bestrecipes.Data.Responses.RecipeList
+import com.example.bestrecipes.data.responses.Instructions
+import com.example.bestrecipes.data.responses.RecipeList
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query

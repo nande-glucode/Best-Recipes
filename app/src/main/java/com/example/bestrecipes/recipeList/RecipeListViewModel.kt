@@ -1,4 +1,4 @@
-package com.example.bestrecipes.RecipeList
+package com.example.bestrecipes.recipeList
 
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
@@ -10,12 +10,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.palette.graphics.Palette
-import com.example.bestrecipes.Data.Responses.Instructions
-import com.example.bestrecipes.Data.Responses.RecipeEntity
-import com.example.bestrecipes.Data.Responses.RecipeList
-import com.example.bestrecipes.SpoonRepository.SpoonRepository
-import com.example.bestrecipes.Utils.Constants.PAGE_SIZE
-import com.example.bestrecipes.Utils.Resource
+import com.example.bestrecipes.data.responses.RecipeEntity
+import com.example.bestrecipes.data.responses.RecipeList
+import com.example.bestrecipes.spoonRepository.SpoonRepository
+import com.example.bestrecipes.utils.Constants.PAGE_SIZE
+import com.example.bestrecipes.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -76,7 +75,6 @@ class RecipeListViewModel @Inject constructor(
                 cachedRecipeList.clear()
                 curPage = 0
                 loadRecipePaginated()
-                loadRecipeInformation(recipeId)
             }
         }
     }
