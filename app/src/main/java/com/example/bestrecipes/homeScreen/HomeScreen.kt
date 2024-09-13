@@ -47,6 +47,8 @@ fun HomeScreen(
     val recipeList by viewModel.recipeList.observeAsState(emptyList())
     val favoriteRecipe by viewModel2.isFavoriteRecipe.observeAsState()
 
+    println("Hello")
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
